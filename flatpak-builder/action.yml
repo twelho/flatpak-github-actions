@@ -30,6 +30,17 @@ inputs:
       Possible values: true, enabled, yes, y. Or something else to disable them.
     default: "false"
     required: false
+  gpg-homedir:
+    description: >
+      Path to the GPG home directory for looking up keyrings when signing build results.
+      Only has an effect if `gpg-sign` is set.
+    required: false
+  gpg-sign:
+    description: >
+      The ID of a GPG key with which to sign the build results. Results will not be
+      signed if this option is not set. The GPG key must be present in a keyring in
+      the GPG home directory, which can be overridden using the `gpg-homedir` option.
+    required: false
   cache:
     description: >
       Toggles caching the flatpak-builder directory.

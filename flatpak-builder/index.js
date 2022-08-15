@@ -136,12 +136,14 @@ const getModifiedManifestPath = manifestPath => {
  * @param {string} repositoryName The repository name used to install the runtime from
  * @param {string} buildDir Where to build the application
  * @param {string} localRepoName The flatpak repository name
+ * @param {string} gpgHomeDir The GPG home directory path for looking up keyrings when signing build results
+ * @param {string} gpgSign The GPG key to sign the build results with
  * @param {boolean} cacheBuildDir Whether to enable caching the build directory
  * @param {string} cacheKey The key used to cache the build directory
  * @param {string} arch The CPU architecture to build for
  * @param {string} mirrorScreenshotsUrl The URL to mirror screenshots
  */
-const build = async (manifest, manifestPath, bundle, repositoryUrl, repositoryName, buildDir, localRepoName, cacheBuildDir, cacheKey, arch, mirrorScreenshotsUrl) => {
+const build = async (manifest, manifestPath, bundle, repositoryUrl, repositoryName, buildDir, localRepoName, gpgHomeDir, gpgSign, cacheBuildDir, cacheKey, arch, mirrorScreenshotsUrl) => {
   const appId = manifest['app-id'] || manifest.id
   const branch = manifest.branch || core.getInput('branch') || 'master'
 
@@ -160,6 +162,12 @@ const build = async (manifest, manifestPath, bundle, repositoryUrl, repositoryNa
   }
   if (mirrorScreenshotsUrl) {
     args.push(`--mirror-screenshots-url=${mirrorScreenshotsUrl}`)
+  }
+  if (gpgHomeDir) {
+    args.push(`--gpg-homedir=${gpgHomeDir}`)
+  }
+  if (gpgSign) {
+    args.push(`--gpg-sign=${gpgSign}`)
   }
   args.push(buildDir, manifestPath)
 
@@ -239,6 +247,8 @@ const prepareBuild = async (repositoryName, repositoryUrl, manifestPath, cacheBu
  * @param {string} repositoryName the repository name to install the runtime from
  * @param {string} buildDir Where to build the application
  * @param {string} localRepoName The flatpak repository name
+ * @param {string} gpgHomeDir The GPG home directory path for looking up keyrings when signing build results
+ * @param {string} gpgSign The GPG key to sign the build results with
  * @param {boolean} cacheBuildDir Whether to enable caching the build directory
  * @param {string} cacheKey the default cache key if there are any
  * @param {string} arch The CPU architecture to build for
@@ -252,6 +262,8 @@ const run = async (
   repositoryName,
   buildDir,
   localRepoName,
+  gpgHomeDir,
+  gpgSign,
   cacheBuildDir,
   cacheKey,
   arch,
@@ -270,7 +282,7 @@ const run = async (
       return saveManifest(modifiedManifest, modifiedManifestPath)
     })
     .then((manifest) => {
-      return build(manifest, modifiedManifestPath, bundle, repositoryUrl, repositoryName, buildDir, localRepoName, cacheBuildDir, cacheKey, arch, mirrorScreenshotsUrl)
+      return build(manifest, modifiedManifestPath, bundle, repositoryUrl, repositoryName, buildDir, localRepoName, gpgHomeDir, gpgSign, cacheBuildDir, cacheKey, arch, mirrorScreenshotsUrl)
     })
     .then(() => {
       core.info('Uploading artifact...')
@@ -305,6 +317,8 @@ if (require.main === module) {
     core.getInput('repository-name'),
     'flatpak_app',
     'repo',
+    core.getInput('gpg-homedir'),
+    core.getInput('gpg-sign'),
     ['y', 'yes', 'true', 'enabled', true].includes(core.getInput('cache')),
     core.getInput('cache-key'),
     core.getInput('arch'),
