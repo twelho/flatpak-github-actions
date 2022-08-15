@@ -24,6 +24,13 @@ inputs:
       Note that the repository name corresponds to the `repository-url` mentioned above.
     required: false
     default: "flathub"
+  local-repository:
+    description: >
+      The path to the local OSTree repository used to export the built artifacts to
+      and build the bundle from. If the path exists, it must point to a valid OSTree
+      repository, otherwise a new repository will be created.
+    required: true
+    default: "repo"
   run-tests:
     description: >
       Toggles the run-tests config option on the defined flatpak-module.

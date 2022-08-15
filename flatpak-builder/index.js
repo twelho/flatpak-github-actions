@@ -304,7 +304,7 @@ if (require.main === module) {
     core.getInput('repository-url'),
     core.getInput('repository-name'),
     'flatpak_app',
-    'repo',
+    core.getInput('local-repository'),
     ['y', 'yes', 'true', 'enabled', true].includes(core.getInput('cache')),
     core.getInput('cache-key'),
     core.getInput('arch'),
